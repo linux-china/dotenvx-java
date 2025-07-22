@@ -46,3 +46,5 @@ dotenvx-java loads private key from the following sources in order:
 # References
 
 * Dotenvx: https://dotenvx.com/
+* Dotenvx Python SDK: https://github.com/dotenvx/python-dotenvx
+* Dotenvx Node.js SDK: https://github.com/dotenvx/dotenvx
