@@ -58,7 +58,7 @@ public class Ecies {
      * @param message      message to encrypt
      * @return encrypted message with base64 encoding
      */
-    public static String encrypt(String publicKeyHex, String message) throws Exception {
+    public static String encrypt(String publicKeyHex, String message) throws InvalidCipherTextException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] publicKey = Hex.decode(publicKeyHex);
         byte[] encrypt = encrypt(publicKey, message.getBytes(StandardCharsets.UTF_8));
         return Base64.toBase64String(encrypt);
@@ -71,7 +71,7 @@ public class Ecies {
      * @param ciphertext    ciphered text in base64
      * @return decrypted message
      */
-    public static String decrypt(String privateKeyHex, String ciphertext) throws Exception {
+    public static String decrypt(String privateKeyHex, String ciphertext) throws InvalidCipherTextException, NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] privateKey = Hex.decode(privateKeyHex);
         byte[] cipherBytes = Base64.decode(ciphertext);
         return new String(decrypt(privateKey, cipherBytes), StandardCharsets.UTF_8);
@@ -84,7 +84,7 @@ public class Ecies {
      * @param message        message to encrypt binary
      * @return encrypted message binary
      */
-    public static byte[] encrypt(byte[] publicKeyBytes, byte[] message) throws Exception {
+    public static byte[] encrypt(byte[] publicKeyBytes, byte[] message) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidCipherTextException {
         ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(CURVE_NAME);
         KeyPair pair = generateEphemeralKey(ecSpec);
 
@@ -112,7 +112,7 @@ public class Ecies {
      * @param cipherBytes     cipher text binary
      * @return decrypted message binary
      */
-    public static byte[] decrypt(byte[] privateKeyBytes, byte[] cipherBytes) throws Exception {
+    public static byte[] decrypt(byte[] privateKeyBytes, byte[] cipherBytes) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidCipherTextException {
         ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(CURVE_NAME);
         KeyFactory keyFactory = getKeyFactory();
         ECNamedCurveSpec curvedParams = new ECNamedCurveSpec(CURVE_NAME, ecSpec.getCurve(), ecSpec.getG(), ecSpec.getN());
