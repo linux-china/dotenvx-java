@@ -98,10 +98,14 @@ public class DotenvxBuilder extends DotenvBuilder {
                 new DotenvReader(directoryPath, filename),
                 throwIfMissing, throwIfMalformed);
         List<DotenvEntry> entries = parser.parse();
+        String profileName = null;
+        if (filename.contains(".env.")) {
+            profileName = filename.substring(filename.indexOf(".env.") + 5);
+        }
         boolean isEncrypted = entries.stream()
                 .anyMatch(entry -> entry.getValue().startsWith("encrypted:"));
         if (isEncrypted) {
-            String privateKey = getDotenvxPrivateKey();
+            String privateKey = getDotenvxPrivateKey(profileName);
             if (privateKey == null || privateKey.isEmpty()) {
                 throw new DotenvException("No DOTENV_PRIVATE_KEY found in environment variables or .env.keys file.");
             }
@@ -122,18 +126,22 @@ public class DotenvxBuilder extends DotenvBuilder {
         return new DotenvImpl(entries);
     }
 
-    private String getDotenvxPrivateKey() {
+    private String getDotenvxPrivateKey(String profileName) {
         if (this.privateKeyHex != null && !this.privateKeyHex.isEmpty()) {
             return this.privateKeyHex;
         } else {
-            String privateKey = System.getenv("DOTENV_PRIVATE_KEY");
+            String privateKeyEnvName = "DOTENV_PRIVATE_KEY";
+            if (profileName != null && !profileName.isEmpty()) {
+                privateKeyEnvName = "DOTENV_PRIVATE_KEY_" + profileName.toUpperCase();
+            }
+            String privateKey = System.getenv(privateKeyEnvName);
             if (privateKey == null || privateKey.isEmpty()) {
                 if (Files.exists(Paths.get(".env.keys"))) { // Check in the current directory
                     final Dotenv keysEnv = Dotenv.configure().filename(".env.keys").load();
-                    privateKey = keysEnv.get("DOTENV_PRIVATE_KEY");
+                    privateKey = keysEnv.get(privateKeyEnvName);
                 } else if (Files.exists(Paths.get(System.getProperty("user.home"), ".env.keys"))) { // Check in the user's home directory
                     final Dotenv keysEnv = Dotenv.configure().directory(System.getProperty("user.home")).filename(".env.keys").load();
-                    privateKey = keysEnv.get("DOTENV_PRIVATE_KEY");
+                    privateKey = keysEnv.get(privateKeyEnvName);
                 }
             }
             this.privateKeyHex = privateKey;
