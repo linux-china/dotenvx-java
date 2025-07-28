@@ -1,7 +1,7 @@
 Dotenvx Java SDK
 ==================
 
-[Dotenvx](https://dotenvx.com/) encrypts your .env files–limiting their attack vector while retaining their benefits.
+[Dotenvx](https://dotenvx.com/) encrypts your .env files, limiting their attack vector while retaining their benefits.
 
 # Get started
 
