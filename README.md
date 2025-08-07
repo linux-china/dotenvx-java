@@ -34,6 +34,7 @@ final String hello = dotenv.get("HELLO");
 
 dotenvx-java loads private key from the following sources in order:
 
+- Global key store file: `$HOME/.dotenvx/.env.keys.json`
 - `DOTENV_PRIVATE_KEY` environment variable
 - `.env.keys` file in working directory
 - `$HOME/.env.keys` file
