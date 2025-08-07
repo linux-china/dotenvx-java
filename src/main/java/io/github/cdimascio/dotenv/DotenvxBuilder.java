@@ -1,14 +1,17 @@
 package io.github.cdimascio.dotenv;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.internal.DotenvParser;
 import io.github.cdimascio.dotenv.internal.DotenvReader;
 import io.github.cdimascio.ecies.Ecies;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Builds and loads and {@link Dotenv} instance with dotenvx support.
@@ -17,6 +20,7 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public class DotenvxBuilder extends DotenvBuilder {
+    public static final ObjectMapper objectMapper = new ObjectMapper();
     private String privateKeyHex = null;
     private String filename = ".env";
     private String directoryPath = "./";
@@ -98,6 +102,7 @@ public class DotenvxBuilder extends DotenvBuilder {
                 new DotenvReader(directoryPath, filename),
                 throwIfMissing, throwIfMalformed);
         List<DotenvEntry> entries = parser.parse();
+        String publicKeyHex = getPublicKeyHex(entries);
         String profileName = null;
         if (filename.contains(".env.")) {
             profileName = filename.substring(filename.indexOf(".env.") + 5);
@@ -105,7 +110,7 @@ public class DotenvxBuilder extends DotenvBuilder {
         boolean isEncrypted = entries.stream()
                 .anyMatch(entry -> entry.getValue().startsWith("encrypted:"));
         if (isEncrypted) {
-            String privateKey = getDotenvxPrivateKey(profileName);
+            String privateKey = getDotenvxPrivateKey(profileName, publicKeyHex);
             if (privateKey == null || privateKey.isEmpty()) {
                 throw new DotenvException("No DOTENV_PRIVATE_KEY found in environment variables or .env.keys file.");
             }
@@ -126,15 +131,46 @@ public class DotenvxBuilder extends DotenvBuilder {
         return new DotenvImpl(entries);
     }
 
-    private String getDotenvxPrivateKey(String profileName) {
+    public String getPublicKeyHex(List<DotenvEntry> entries) {
+        for (DotenvEntry entry : entries) {
+            final String key = entry.getKey();
+            if (key.startsWith("DOTENV_PUBLIC_KEY")) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    public String getDotenvxPrivateKey(String profileName, String publicKeyHex) {
         if (this.privateKeyHex != null && !this.privateKeyHex.isEmpty()) {
             return this.privateKeyHex;
         } else {
+            // load the private key from the global store: .env.keys.json
+            if (publicKeyHex != null && !publicKeyHex.isEmpty()) {
+                final Path globalFileStore = Paths.get(System.getProperty("user.home"), ".dotenvx", ".env.keys.json");
+                if (Files.exists(globalFileStore)) {
+                    try {
+                        final Map<String, Object> globalStore = objectMapper.readValue(globalFileStore.toFile(), Map.class);
+                        if (globalStore.containsKey(publicKeyHex)) {
+                            final Object keyPair = globalStore.get(publicKeyHex);
+                            if (keyPair instanceof Map) {
+                                final Map<String, Object> keyPairMap = (Map<String, Object>) keyPair;
+                                this.privateKeyHex = keyPairMap.get("private_key").toString();
+                                return this.privateKeyHex;
+                            }
+                        }
+                    } catch (Exception ignore) {
+
+                    }
+                }
+            }
+            // load from environment variables
             String privateKeyEnvName = "DOTENV_PRIVATE_KEY";
             if (profileName != null && !profileName.isEmpty()) {
                 privateKeyEnvName = "DOTENV_PRIVATE_KEY_" + profileName.toUpperCase();
             }
             String privateKey = System.getenv(privateKeyEnvName);
+            // load from .env.keys file
             if (privateKey == null || privateKey.isEmpty()) {
                 if (Files.exists(Paths.get(".env.keys"))) { // Check in the current directory
                     final Dotenv keysEnv = Dotenv.configure().filename(".env.keys").load();
