@@ -172,7 +172,10 @@ public class DotenvxBuilder extends DotenvBuilder {
             String privateKey = System.getenv(privateKeyEnvName);
             // load from .env.keys file
             if (privateKey == null || privateKey.isEmpty()) {
-                if (Files.exists(Paths.get(".env.keys"))) { // Check in the current directory
+                if (this.directoryPath != null && Files.exists(Paths.get(this.directoryPath, ".env.keys"))) { // Check in the specified directory
+                    final Dotenv keysEnv = Dotenv.configure().directory(this.directoryPath).filename(".env.keys").load();
+                    privateKey = keysEnv.get(privateKeyEnvName);
+                } else if (Files.exists(Paths.get(".env.keys"))) { // Check in the current directory
                     final Dotenv keysEnv = Dotenv.configure().filename(".env.keys").load();
                     privateKey = keysEnv.get(privateKeyEnvName);
                 } else if (Files.exists(Paths.get(System.getProperty("user.home"), ".env.keys"))) { // Check in the user's home directory
