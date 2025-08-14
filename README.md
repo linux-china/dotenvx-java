@@ -27,6 +27,18 @@ final String hello = dotenv.get("HELLO");
 ```
 
 **Tips**: you can use `Dotenvx.configure()` to customize the loading of the `.env` file and private key.
+        
+# Load properties file
+      
+If you want to use a properties file, please use `DotenvxPropertiesBuilder`, example:
+
+```
+    @Test
+    public void testLoadProperties() {
+        final Properties properties = new DotenvxPropertiesBuilder().filename("classpath:application.properties").load();
+        System.out.println(properties.get("hello"));
+    }
+```
 
 # How dotenvx works?
 
