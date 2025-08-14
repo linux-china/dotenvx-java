@@ -27,9 +27,9 @@ final String hello = dotenv.get("HELLO");
 ```
 
 **Tips**: you can use `Dotenvx.configure()` to customize the loading of the `.env` file and private key.
-        
+
 # Load properties file
-      
+
 If you want to use a properties file, please use `DotenvxPropertiesBuilder`, example:
 
 ```
@@ -38,6 +38,50 @@ If you want to use a properties file, please use `DotenvxPropertiesBuilder`, exa
         final Properties properties = new DotenvxPropertiesBuilder().filename("classpath:application.properties").load();
         System.out.println(properties.get("hello"));
     }
+```
+
+# Jakarta Configuration
+
+Dotenvx-java is compatible with [Jakarta Configuration](, you can use it as follows:
+
+For example, you can define a configuration class:
+
+```java
+public class DemoConfig {
+    private String hello;
+
+    public String getHello() {
+        return hello;
+    }
+
+    public void setHello(String hello) {
+        this.hello = hello;
+    }
+}
+```
+
+And then load the configuration using `Loader`:
+
+```java
+
+@Test
+public void testJakartaConfig() throws Exception {
+    final Loader loader = Loader.bootstrap();
+    DemoConfig config = loader
+            .path(".env")
+            .load(DemoConfig.class);
+    System.out.println(config.getHello());
+}
+
+```
+
+Or you can define a Config interface:
+
+```java
+
+public interface UserConfig {
+    String hello();
+}
 ```
 
 # How dotenvx works?
@@ -61,3 +105,4 @@ dotenvx-java loads private key from the following sources in order:
 * Dotenvx: https://dotenvx.com/
 * Dotenvx Python SDK: https://github.com/dotenvx/python-dotenvx
 * Dotenvx Node.js SDK: https://github.com/dotenvx/dotenvx
+* Jakarta Configuration: https://github.com/jakartaee/config
