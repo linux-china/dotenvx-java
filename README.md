@@ -74,13 +74,15 @@ public void testJakartaConfig() throws Exception {
 }
 
 ```
-
-Or you can define a Config interface:
+         
+You can use POJO as a configuration class, and you can use config interface or record as well.
 
 ```java
-
 public interface UserConfig {
     String hello();
+}
+
+public record DemoRecordConfig(String hello) {
 }
 ```
 
