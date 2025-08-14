@@ -36,6 +36,23 @@ public class DotenvxLoader implements Loader {
                         new DotenvxJakartaConfigInvocationHandler(entries)
                 );
             }
+            // check the clazz is a record or not
+            if (clazz.isRecord()) {
+                // If the class is a record, we need to create an instance using the record constructor
+                RecordComponent[] components = clazz.getRecordComponents();
+                Class<?>[] componentTypes = new Class[components.length];
+                Object[] args = new Object[components.length];
+                for (int i = 0; i < components.length; i++) {
+                    String fieldName = components[i].getName();
+                    componentTypes[i] = components[i].getType();
+                    String value = entries.get(getConfigKeyName(fieldName));
+                    if (value != null) {
+                        args[i] = convertValue(value, componentTypes[i]);
+                    }
+                }
+                return clazz.getConstructor(componentTypes).newInstance(args);
+            }
+            // normal POJO
             final T instance = clazz.getDeclaredConstructor().newInstance();
             // inject fields to Map instance
             if (instance instanceof Map) {
@@ -49,17 +66,8 @@ public class DotenvxLoader implements Loader {
                 final String value = entries.get(getConfigKeyName(fieldName));
                 if (value != null) {
                     declaredField.setAccessible(true);
-                    if (declaredField.getType() == String.class) {
-                        declaredField.set(instance, value);
-                    } else if (declaredField.getType() == int.class || declaredField.getType() == Integer.class) {
-                        declaredField.set(instance, Integer.parseInt(value));
-                    } else if (declaredField.getType() == boolean.class || declaredField.getType() == Boolean.class) {
-                        declaredField.set(instance, Boolean.parseBoolean(value));
-                    } else if (declaredField.getType() == long.class || declaredField.getType() == Long.class) {
-                        declaredField.set(instance, Long.parseLong(value));
-                    } else if (declaredField.getType() == double.class || declaredField.getType() == Double.class) {
-                        declaredField.set(instance, Double.parseDouble(value));
-                    }
+                    Object fieldValue = convertValue(value, declaredField.getType());
+                    declaredField.set(instance, fieldValue);
                 }
             }
             return instance;
@@ -90,6 +98,21 @@ public class DotenvxLoader implements Loader {
             this.extName = "env";
         }
         return this;
+    }
+
+    private Object convertValue(String value, Class<?> type) {
+        if (type == String.class) {
+            return value;
+        } else if (type == int.class || type == Integer.class) {
+            return Integer.parseInt(value);
+        } else if (type == boolean.class || type == Boolean.class) {
+            return Boolean.parseBoolean(value);
+        } else if (type == long.class || type == Long.class) {
+            return Long.parseLong(value);
+        } else if (type == double.class || type == Double.class) {
+            return Double.parseDouble(value);
+        }
+        throw new UnsupportedOperationException("Unsupported type: " + type.getName());
     }
 
     private String getConfigKeyName(String fieldName) {
@@ -173,20 +196,8 @@ public class DotenvxLoader implements Loader {
                 return null;
             }
             String value = entries.get(keyName);
-            // Handle different return types
-            if (method.getReturnType() == String.class) {
-                return value;
-            } else if (method.getReturnType() == int.class || method.getReturnType() == Integer.class) {
-                return Integer.parseInt(value);
-            } else if (method.getReturnType() == boolean.class || method.getReturnType() == Boolean.class) {
-                return Boolean.parseBoolean(value);
-            } else if (method.getReturnType() == long.class || method.getReturnType() == Long.class) {
-                return Long.parseLong(value);
-            } else if (method.getReturnType() == double.class || method.getReturnType() == Double.class) {
-                return Double.parseDouble(value);
-            }
-            // If the type is not supported, throw an exception
-            throw new UnsupportedOperationException("Unsupported return type: " + method.getReturnType());
+            return convertValue(value, method.getReturnType());
         }
     }
+
 }
