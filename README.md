@@ -86,8 +86,12 @@ public record DemoRecordConfig(String hello) {
 }
 ```
 
-**Attention**: Now only `String`, `Integer`, `Long`, `Double`, `Boolean` field types are supported in the configuration
-class.
+Restrictions:
+
+- Now only `String`, `Integer`, `Long`, `Double`, `Boolean` field types are supported
+- Naming conventions:
+    - `hello` to `HELLO` in .env file and `hello` in properties file
+    - `jdbcUrl` to `JDBC_URL` or `jdbc.url`
 
 # How dotenvx works?
 
