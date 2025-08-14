@@ -19,6 +19,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <bouncycastle.version>1.81</bouncycastle.version>
         <dotenv-java.version>3.2.0</dotenv-java.version>
+        <jakarta.config-api.version>0.0.1</jakarta.config-api.version>
+        <jackson.version>2.15.4</jackson.version>
         <junt5.version>5.13.4</junt5.version>
     </properties>
 
@@ -54,9 +56,14 @@
             <version>${dotenv-java.version}</version>
         </dependency>
         <dependency>
+            <groupId>jakarta.config</groupId>
+            <artifactId>jakarta.config-api</artifactId>
+            <version>${jakarta.config-api.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.4</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
