@@ -74,7 +74,7 @@ public void testJakartaConfig() throws Exception {
 }
 
 ```
-         
+
 You can use POJO as a configuration class, and you can use config interface or record as well.
 
 ```java
@@ -85,6 +85,9 @@ public interface UserConfig {
 public record DemoRecordConfig(String hello) {
 }
 ```
+
+**Attention**: Now only `String`, `Integer`, `Long`, `Double`, `Boolean` field types are supported in the configuration
+class.
 
 # How dotenvx works?
 
