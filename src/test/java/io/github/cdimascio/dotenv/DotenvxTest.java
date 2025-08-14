@@ -1,5 +1,6 @@
 package io.github.cdimascio.dotenv;
 
+import jakarta.config.Loader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -30,5 +31,33 @@ public class DotenvxTest {
     public void testLoadProperties() {
         final Properties properties = new DotenvxPropertiesBuilder().filename("classpath:application.properties").load();
         System.out.println(properties.get("hello"));
+    }
+
+    @Test
+    public void testJakartaConfig() throws Exception {
+        final Loader loader = Loader.bootstrap();
+        DemoConfig config = loader
+                .path(".env")
+                .load(DemoConfig.class);
+        System.out.println(config.getHello());
+    }
+
+    @Test
+    public void testJakartaConfigInterface() throws Exception {
+        final Loader loader = Loader.bootstrap();
+        UserConfig config = loader
+                .path(".env")
+                .load(UserConfig.class);
+        System.out.println(config.hello());
+        System.out.println(config.world());
+    }
+
+    @Test
+    public void testJakartaConfigRecord() throws Exception {
+        final Loader loader = Loader.bootstrap();
+        DemoRecordConfig config = loader
+                .path(".env")
+                .load(DemoRecordConfig.class);
+        System.out.println(config.hello());
     }
 }
