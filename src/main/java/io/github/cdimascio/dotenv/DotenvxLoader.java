@@ -3,8 +3,8 @@ package io.github.cdimascio.dotenv;
 import jakarta.config.Loader;
 import jakarta.config.TypeToken;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -27,6 +27,15 @@ public class DotenvxLoader implements Loader {
         }
         try {
             Map<String, String> entries = entries();
+            // check the clazz is an interface or not
+            if (clazz.isInterface()) {
+                Class<?>[] interfaces = new Class[]{clazz};
+                return (T) Proxy.newProxyInstance(
+                        clazz.getClassLoader(),
+                        interfaces,
+                        new DotenvxJakartaConfigInvocationHandler(entries)
+                );
+            }
             final T instance = clazz.getDeclaredConstructor().newInstance();
             // inject fields to Map instance
             if (instance instanceof Map) {
@@ -84,8 +93,8 @@ public class DotenvxLoader implements Loader {
     }
 
     private String getConfigKeyName(String fieldName) {
+        StringBuilder sb = new StringBuilder();
         if ("properties".equals(extName)) {
-            StringBuilder sb = new StringBuilder();
             for (char c : fieldName.toCharArray()) {
                 if (Character.isUpperCase(c)) {
                     sb.append('.').append(Character.toLowerCase(c));
@@ -93,17 +102,15 @@ public class DotenvxLoader implements Loader {
                     sb.append(c);
                 }
             }
-            return sb.toString();
         } else {
-            StringBuilder sb = new StringBuilder();
             for (char c : fieldName.toCharArray()) {
                 if (Character.isUpperCase(c)) {
                     sb.append('_');
                 }
                 sb.append(Character.toUpperCase(c));
             }
-            return sb.toString();
         }
+        return sb.toString();
     }
 
     private Map<String, String> entries() throws Exception {
@@ -143,6 +150,43 @@ public class DotenvxLoader implements Loader {
                         .collect(java.util.stream.Collectors.toMap(DotenvEntry::getKey, DotenvEntry::getValue));
             }
 
+        }
+    }
+
+    public class DotenvxJakartaConfigInvocationHandler implements InvocationHandler {
+        public Map<String, String> entries;
+
+        public DotenvxJakartaConfigInvocationHandler(Map<String, String> entries) {
+            this.entries = entries;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            // Handle default methods in interfaces
+            if (method.isDefault()) {
+                return MethodHandles.lookup().unreflectSpecial(method, method.getDeclaringClass())
+                        .bindTo(proxy).invokeWithArguments(args);
+            }
+            String methodName = method.getName();
+            String keyName = getConfigKeyName(methodName);
+            if (!entries.containsKey(keyName)) {
+                return null;
+            }
+            String value = entries.get(keyName);
+            // Handle different return types
+            if (method.getReturnType() == String.class) {
+                return value;
+            } else if (method.getReturnType() == int.class || method.getReturnType() == Integer.class) {
+                return Integer.parseInt(value);
+            } else if (method.getReturnType() == boolean.class || method.getReturnType() == Boolean.class) {
+                return Boolean.parseBoolean(value);
+            } else if (method.getReturnType() == long.class || method.getReturnType() == Long.class) {
+                return Long.parseLong(value);
+            } else if (method.getReturnType() == double.class || method.getReturnType() == Double.class) {
+                return Double.parseDouble(value);
+            }
+            // If the type is not supported, throw an exception
+            throw new UnsupportedOperationException("Unsupported return type: " + method.getReturnType());
         }
     }
 }
