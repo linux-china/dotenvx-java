@@ -2,6 +2,8 @@ package io.github.cdimascio.dotenv;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DotenvxTest {
@@ -22,5 +24,11 @@ public class DotenvxTest {
         Dotenv dotenv = builder.load();
         final String hello = dotenv.get("HELLO");
         System.out.println("HELLO: " + hello);
+    }
+
+    @Test
+    public void testLoadProperties() {
+        final Properties properties = new DotenvxPropertiesBuilder().filename("classpath:application.properties").load();
+        System.out.println(properties.get("hello"));
     }
 }
