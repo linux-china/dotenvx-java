@@ -42,7 +42,7 @@ If you want to use a properties file, please use `DotenvxPropertiesBuilder`, exa
 
 # Jakarta Configuration
 
-Dotenvx-java is compatible with [Jakarta Configuration](, you can use it as follows:
+Dotenvx-java is compatible with [Jakarta Configuration](https://github.com/jakartaee/config), you can use it as follows:
 
 For example, you can define a configuration class:
 
