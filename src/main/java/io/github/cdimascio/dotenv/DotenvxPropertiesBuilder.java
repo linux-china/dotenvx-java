@@ -17,7 +17,7 @@ import java.util.Properties;
  *
  */
 @SuppressWarnings("unused")
-public class DotenvxPropertiesBuilder {
+public class DotenvxPropertiesBuilder implements DotenvxBaseBuilder {
     public static final ObjectMapper objectMapper = new ObjectMapper();
     private String privateKeyHex = null;
     private String filename = "application.properties";
@@ -127,24 +127,10 @@ public class DotenvxPropertiesBuilder {
         } else {
             // load the private key from the global store: .env.keys.json
             if (publicKeyHex != null && !publicKeyHex.isEmpty()) {
-                final Path globalFileStore = Paths.get(System.getProperty("user.home"), ".dotenvx", ".env.keys.json");
-                if (Files.exists(globalFileStore)) {
-                    try {
-                        Map<String, Object> globalStore = objectMapper.readValue(globalFileStore.toFile(), Map.class);
-                        if (globalStore.containsKey("version") && globalStore.containsKey("keys")) { // new file format
-                            globalStore = (Map<String, Object>) globalStore.get("keys");
-                        }
-                        if (globalStore.containsKey(publicKeyHex)) {
-                            final Object keyPair = globalStore.get(publicKeyHex);
-                            if (keyPair instanceof Map) {
-                                final Map<String, Object> keyPairMap = (Map<String, Object>) keyPair;
-                                this.privateKeyHex = keyPairMap.get("private_key").toString();
-                                return this.privateKeyHex;
-                            }
-                        }
-                    } catch (Exception ignore) {
-
-                    }
+                String privateKey = getPrivateKeyFromGlobalStore(publicKeyHex);
+                if (privateKey != null && !privateKey.isEmpty()) {
+                    this.privateKeyHex = privateKey;
+                    return this.privateKeyHex;
                 }
             }
             // load from environment variables

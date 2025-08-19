@@ -1,17 +1,14 @@
 package io.github.cdimascio.dotenv;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cdimascio.dotenv.internal.DotenvParser;
 import io.github.cdimascio.dotenv.internal.DotenvReader;
 import io.github.cdimascio.ecies.Ecies;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Builds and loads and {@link Dotenv} instance with dotenvx support.
@@ -19,8 +16,7 @@ import java.util.Map;
  * @see Dotenvx#configure()
  */
 @SuppressWarnings("unused")
-public class DotenvxBuilder extends DotenvBuilder {
-    public static final ObjectMapper objectMapper = new ObjectMapper();
+public class DotenvxBuilder extends DotenvBuilder implements DotenvxBaseBuilder {
     private String privateKeyHex = null;
     private String filename = ".env";
     private String directoryPath = "./";
@@ -147,24 +143,10 @@ public class DotenvxBuilder extends DotenvBuilder {
         } else {
             // load the private key from the global store: .env.keys.json
             if (publicKeyHex != null && !publicKeyHex.isEmpty()) {
-                final Path globalFileStore = Paths.get(System.getProperty("user.home"), ".dotenvx", ".env.keys.json");
-                if (Files.exists(globalFileStore)) {
-                    try {
-                        Map<String, Object> globalStore = objectMapper.readValue(globalFileStore.toFile(), Map.class);
-                        if (globalStore.containsKey("version") && globalStore.containsKey("keys")) { // new file format
-                            globalStore = (Map<String, Object>) globalStore.get("keys");
-                        }
-                        if (globalStore.containsKey(publicKeyHex)) {
-                            final Object keyPair = globalStore.get(publicKeyHex);
-                            if (keyPair instanceof Map) {
-                                final Map<String, Object> keyPairMap = (Map<String, Object>) keyPair;
-                                this.privateKeyHex = keyPairMap.get("private_key").toString();
-                                return this.privateKeyHex;
-                            }
-                        }
-                    } catch (Exception ignore) {
-
-                    }
+                String privateKey = getPrivateKeyFromGlobalStore(publicKeyHex);
+                if (privateKey != null && !privateKey.isEmpty()) {
+                    this.privateKeyHex = privateKey;
+                    return this.privateKeyHex;
                 }
             }
             // load from environment variables
