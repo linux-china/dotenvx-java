@@ -150,7 +150,10 @@ public class DotenvxBuilder extends DotenvBuilder {
                 final Path globalFileStore = Paths.get(System.getProperty("user.home"), ".dotenvx", ".env.keys.json");
                 if (Files.exists(globalFileStore)) {
                     try {
-                        final Map<String, Object> globalStore = objectMapper.readValue(globalFileStore.toFile(), Map.class);
+                        Map<String, Object> globalStore = objectMapper.readValue(globalFileStore.toFile(), Map.class);
+                        if (globalStore.containsKey("version") && globalStore.containsKey("keys")) { // new file format
+                            globalStore = (Map<String, Object>) globalStore.get("keys");
+                        }
                         if (globalStore.containsKey(publicKeyHex)) {
                             final Object keyPair = globalStore.get(publicKeyHex);
                             if (keyPair instanceof Map) {
