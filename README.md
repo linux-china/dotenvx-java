@@ -104,6 +104,29 @@ dotenvx-java loads private key from the following sources in order:
 - `.env.keys` file in working directory
 - `$HOME/.env.keys` file
 
+### How to integrate Jackson with Dotenvx?
+
+You can integrate Jackson with Dotenvx to protect some sensitive fields, such as SSN, email or phone number.
+
+```java
+  ObjectMapper getDotenvxObjectMapper() {
+    SimpleModule simpleModule = new SimpleModule();
+    simpleModule.addSerializer(new DotenvxGlobalJsonSerializer(publicKey));
+    return JsonMapper.builder().addModules(simpleModule).build();
+}
+
+@Test
+public void testJsonSerialize() throws IOException {
+    Map<String, String> info = new HashMap<>();
+    info.put("email", "private:demo@example.com");
+    info.put("nick", "Jackie");
+    final String jsonText = objectMapper.writeValueAsString(info);
+    System.out.println(jsonText);
+}
+```
+
+If text value prefixed with `private:`, and the value will encrypted.
+
 # Credits
 
 - ecies-java: https://github.com/ecies/java
@@ -115,3 +138,4 @@ dotenvx-java loads private key from the following sources in order:
 * Dotenvx Python SDK: https://github.com/dotenvx/python-dotenvx
 * Dotenvx Node.js SDK: https://github.com/dotenvx/dotenvx
 * Jakarta Configuration: https://github.com/jakartaee/config
+* Intro to the Jackson ObjectMapper: https://www.baeldung.com/jackson-object-mapper-tutorial
