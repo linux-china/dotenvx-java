@@ -1,5 +1,7 @@
 package io.github.cdimascio.dotenv;
 
+import io.github.cdimascio.ecies.ECKeyPair;
+import io.github.cdimascio.ecies.Ecies;
 import jakarta.config.Loader;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +10,13 @@ import java.util.Properties;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DotenvxTest {
+
+    @Test
+    public void testGenerateKeyPair() throws Exception {
+        ECKeyPair keyPair = Ecies.generateEcKeyPair();
+        System.out.println("Public Key: " + keyPair.getPublicHex(true));
+        System.out.println("Private Key: " + keyPair.getPrivateHex());
+    }
 
     @Test
     public void testDotenv() {
