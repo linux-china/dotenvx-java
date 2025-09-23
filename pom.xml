@@ -17,7 +17,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <bouncycastle.version>1.81</bouncycastle.version>
+        <bouncycastle.version>1.82</bouncycastle.version>
         <dotenv-java.version>3.2.0</dotenv-java.version>
         <jakarta.config-api.version>0.0.1</jakarta.config-api.version>
         <jackson.version>2.15.4</jackson.version>
