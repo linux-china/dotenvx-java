@@ -125,7 +125,7 @@ public void testJsonSerialize() throws IOException {
 }
 ```
 
-If text value prefixed with `private:`, and the value will encrypted.
+If a text value prefixed with `private:`, and the value will be encrypted.
 
 # Credits
 
