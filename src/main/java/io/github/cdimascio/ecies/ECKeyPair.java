@@ -1,38 +1,38 @@
 package io.github.cdimascio.ecies;
 
-import org.bouncycastle.jce.interfaces.ECPrivateKey;
-import org.bouncycastle.jce.interfaces.ECPublicKey;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.util.encoders.Hex;
 
 @SuppressWarnings("unused")
 public final class ECKeyPair {
 
-    private final ECPrivateKey privateKey;
-    private final ECPublicKey publicKey;
+    private final BCECPrivateKey privateKey;
+    private final BCECPublicKey publicKey;
 
-    public ECKeyPair(ECPublicKey publicKey, ECPrivateKey privateKey) {
+    public ECKeyPair(BCECPublicKey publicKey, BCECPrivateKey privateKey) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
     }
 
-    public ECPublicKey getPublic() {
+    public BCECPublicKey getPublic() {
         return publicKey;
     }
 
-    public ECPrivateKey getPrivate() {
+    public BCECPrivateKey getPrivate() {
         return privateKey;
     }
 
-    public byte[] getPublicBinary(boolean encoded) {
-        return publicKey.getQ().getEncoded(encoded);
+    public byte[] getPublicBinary(boolean compressed) {
+        return publicKey.getQ().getEncoded(compressed);
     }
 
     public byte[] getPrivateBinary() {
         return privateKey.getD().toByteArray();
     }
 
-    public String getPublicHex(boolean encoded) {
-        return Hex.toHexString(getPublicBinary(encoded));
+    public String getPublicHex(boolean compressed) {
+        return Hex.toHexString(getPublicBinary(compressed));
     }
 
     public String getPrivateHex() {
