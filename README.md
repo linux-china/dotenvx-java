@@ -12,7 +12,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>org.mvnsearch</groupId>
     <artifactId>dotenvx-java</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
 </dependency>
 ```
 
@@ -126,6 +126,11 @@ public void testJsonSerialize() throws IOException {
 ```
 
 If a text value prefixed with `private:`, and the value will be encrypted.
+
+### private/public key parser and signature with secp256k1
+
+- [Secp256k1KeyParser](src/main/java/io/github/cdimascio/crypto/Secp256k1KeyParser.java): Key parser
+- [Secp256k1Signer](src/main/java/io/github/cdimascio/crypto/Secp256k1Signer.java): signature
 
 # Credits
 
