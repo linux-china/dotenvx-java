@@ -144,3 +144,4 @@ If a text value prefixed with `private:`, and the value will be encrypted.
 * Dotenvx Node.js SDK: https://github.com/dotenvx/dotenvx
 * Jakarta Configuration: https://github.com/jakartaee/config
 * Intro to the Jackson ObjectMapper: https://www.baeldung.com/jackson-object-mapper-tutorial
+* ECIES Mechanism and Implementation in JavaScript: https://ecies.org/js/DETAILS.html
