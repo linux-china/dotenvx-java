@@ -12,7 +12,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>org.mvnsearch</groupId>
     <artifactId>dotenvx-java</artifactId>
-    <version>0.2.3</version>
+    <version>0.2.4</version>
 </dependency>
 ```
 
