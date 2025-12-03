@@ -49,7 +49,7 @@ public class DotenvxPropertiesBuilder implements DotenvxBaseBuilder {
      * @param privateKeyHex private key in hexadecimal format
      */
     public DotenvxPropertiesBuilder privateKey(String privateKeyHex) {
-        this.privateKeyHex = privateKeyHex;
+        this.privateKeyHex = trimPrivateKey(privateKeyHex);
         return this;
     }
 
