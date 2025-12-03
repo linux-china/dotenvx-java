@@ -129,7 +129,7 @@ public class DotenvxPropertiesBuilder implements DotenvxBaseBuilder {
             if (publicKeyHex != null && !publicKeyHex.isEmpty()) {
                 String privateKey = getPrivateKeyFromGlobalStore(publicKeyHex);
                 if (privateKey != null && !privateKey.isEmpty()) {
-                    this.privateKeyHex = privateKey;
+                    this.privateKeyHex = trimPrivateKey(privateKey);
                     return this.privateKeyHex;
                 }
             }
@@ -152,7 +152,7 @@ public class DotenvxPropertiesBuilder implements DotenvxBaseBuilder {
                     privateKey = keysEnv.get(privateKeyEnvName);
                 }
             }
-            this.privateKeyHex = privateKey;
+            this.privateKeyHex = trimPrivateKey(privateKey);
         }
         return this.privateKeyHex;
     }

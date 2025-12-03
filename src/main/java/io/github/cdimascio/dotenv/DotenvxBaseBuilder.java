@@ -23,7 +23,7 @@ public interface DotenvxBaseBuilder {
                     final Object keyPair = globalStore.get(publicKeyHex);
                     if (keyPair instanceof Map) {
                         final Map<String, Object> keyPairMap = (Map<String, Object>) keyPair;
-                        return keyPairMap.get("private_key").toString();
+                        return trimPrivateKey(keyPairMap.get("private_key").toString());
                     }
                 }
             } catch (Exception ignore) {
@@ -31,6 +31,13 @@ public interface DotenvxBaseBuilder {
             }
         }
         return null;
+    }
+
+    default String trimPrivateKey(String privateKeyHex) {
+        if (privateKeyHex != null && privateKeyHex.contains("{")) {
+            return privateKeyHex.substring(0, privateKeyHex.indexOf("{"));
+        }
+        return privateKeyHex;
     }
 
 }
