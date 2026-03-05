@@ -1,6 +1,6 @@
 ---
 name: dotenvx-java
-description: Dotenvx Java SDK - decrypt your .env and properties files with Spring Boot support
+description: Dotenvx Java SDK - decrypt your .env and properties files, encrypt JSON fields etc.
 ---
 
 ## Get started
