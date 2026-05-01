@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  *
  * @author linux_china
  */
+@SuppressWarnings("unchecked")
 public class DotenvxLoader implements Loader {
     private String configFilePath;
     private String extName;

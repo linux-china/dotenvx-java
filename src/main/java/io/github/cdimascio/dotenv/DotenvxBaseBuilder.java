@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 
+@SuppressWarnings("unchecked")
 public interface DotenvxBaseBuilder {
     ObjectMapper objectMapper = new ObjectMapper();
 
