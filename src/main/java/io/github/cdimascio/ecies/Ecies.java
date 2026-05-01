@@ -19,6 +19,7 @@ import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.jce.spec.ECNamedCurveSpec;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
+import org.jspecify.annotations.NonNull;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -60,7 +61,7 @@ public class Ecies {
      * @param message      message to encrypt
      * @return encrypted message with base64 encoding
      */
-    public static String encrypt(String publicKeyHex, String message) throws InvalidCipherTextException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public static String encrypt(@NonNull String publicKeyHex, @NonNull String message) throws InvalidCipherTextException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] publicKey = Hex.decode(publicKeyHex);
         byte[] encrypt = encrypt(publicKey, message.getBytes(StandardCharsets.UTF_8));
         return Base64.toBase64String(encrypt);
@@ -73,7 +74,7 @@ public class Ecies {
      * @param ciphertext    ciphered text in base64
      * @return decrypted message
      */
-    public static String decrypt(String privateKeyHex, String ciphertext) throws InvalidCipherTextException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public static String decrypt(@NonNull String privateKeyHex, @NonNull String ciphertext) throws InvalidCipherTextException, NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] privateKey = Hex.decode(privateKeyHex);
         byte[] cipherBytes = Base64.decode(ciphertext);
         return new String(decrypt(privateKey, cipherBytes), StandardCharsets.UTF_8);

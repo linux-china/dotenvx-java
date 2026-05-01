@@ -1,6 +1,8 @@
 package io.github.cdimascio.dotenv;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +14,8 @@ import java.util.Map;
 public interface DotenvxBaseBuilder {
     ObjectMapper objectMapper = new ObjectMapper();
 
-    default String getPrivateKeyFromGlobalStore(String publicKeyHex) {
+    @Nullable
+    default String getPrivateKeyFromGlobalStore(@NonNull String publicKeyHex) {
         final Path globalFileStore = Paths.get(System.getProperty("user.home"), ".dotenvx", ".env.keys.json");
         if (Files.exists(globalFileStore)) {
             try {
@@ -34,7 +37,8 @@ public interface DotenvxBaseBuilder {
         return null;
     }
 
-    default String trimPrivateKey(String privateKeyHex) {
+    @Nullable
+    default String trimPrivateKey(@Nullable String privateKeyHex) {
         if (privateKeyHex != null && privateKeyHex.contains("{")) {
             return privateKeyHex.substring(0, privateKeyHex.indexOf("{"));
         }

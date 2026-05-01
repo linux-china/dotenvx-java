@@ -36,7 +36,7 @@ public class DotenvxPropertiesBuilder implements DotenvxBaseBuilder {
     /**
      * Sets the name of the .properties file. The default is application.properties.
      *
-     * @param name the filename or classpath resource,, such as `classpath:application.properties`
+     * @param name the filename or classpath resource, such as `classpath:application.properties`
      */
     public DotenvxPropertiesBuilder filename(final String name) {
         filename = name;
@@ -133,26 +133,7 @@ public class DotenvxPropertiesBuilder implements DotenvxBaseBuilder {
                     return this.privateKeyHex;
                 }
             }
-            // load from environment variables
-            String privateKeyEnvName = "DOTENV_PRIVATE_KEY";
-            if (profileName != null && !profileName.isEmpty()) {
-                privateKeyEnvName = "DOTENV_PRIVATE_KEY_" + profileName.toUpperCase();
-            }
-            String privateKey = System.getenv(privateKeyEnvName);
-            // load from .env.keys file
-            if (privateKey == null || privateKey.isEmpty()) {
-                if (this.directoryPath != null && Files.exists(Paths.get(this.directoryPath, ".env.keys"))) { // Check in the specified directory
-                    final Dotenv keysEnv = Dotenv.configure().directory(this.directoryPath).filename(".env.keys").load();
-                    privateKey = keysEnv.get(privateKeyEnvName);
-                } else if (Files.exists(Paths.get(".env.keys"))) { // Check in the current directory
-                    final Dotenv keysEnv = Dotenv.configure().filename(".env.keys").load();
-                    privateKey = keysEnv.get(privateKeyEnvName);
-                } else if (Files.exists(Paths.get(System.getProperty("user.home"), ".env.keys"))) { // Check in the user's home directory
-                    final Dotenv keysEnv = Dotenv.configure().directory(System.getProperty("user.home")).filename(".env.keys").load();
-                    privateKey = keysEnv.get(privateKeyEnvName);
-                }
-            }
-            this.privateKeyHex = trimPrivateKey(privateKey);
+            this.privateKeyHex = trimPrivateKey(DotenvxBuilder.getPrivateKeyFromEnvOrPath(this.directoryPath, profileName));
         }
         return this.privateKeyHex;
     }

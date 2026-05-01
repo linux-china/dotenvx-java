@@ -1,5 +1,7 @@
 package io.github.cdimascio.dotenv;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * Creates and configures a new Dotenv instance with dotenvx support.
  */
@@ -14,6 +16,7 @@ public interface Dotenvx {
         return new DotenvxBuilder();
     }
 
+    @NonNull
     static Dotenv load() {
         return new DotenvxBuilder().load();
     }

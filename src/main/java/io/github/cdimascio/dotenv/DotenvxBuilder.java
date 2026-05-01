@@ -4,6 +4,8 @@ package io.github.cdimascio.dotenv;
 import io.github.cdimascio.dotenv.internal.DotenvParser;
 import io.github.cdimascio.dotenv.internal.DotenvReader;
 import io.github.cdimascio.ecies.Ecies;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -93,6 +95,7 @@ public class DotenvxBuilder extends DotenvBuilder implements DotenvxBaseBuilder 
      * @return a new {@link Dotenv} instance
      * @throws DotenvException when an error occurs
      */
+    @NonNull
     public Dotenv load() throws DotenvException {
         final DotenvParser parser = new DotenvParser(
                 new DotenvReader(directoryPath, filename),
@@ -137,6 +140,7 @@ public class DotenvxBuilder extends DotenvBuilder implements DotenvxBaseBuilder 
         return null;
     }
 
+    @Nullable
     public String getDotenvxPrivateKey(String profileName, String publicKeyHex) {
         if (this.privateKeyHex != null && !this.privateKeyHex.isEmpty()) {
             return this.privateKeyHex;
@@ -149,26 +153,7 @@ public class DotenvxBuilder extends DotenvBuilder implements DotenvxBaseBuilder 
                     return this.privateKeyHex;
                 }
             }
-            // load from environment variables
-            String privateKeyEnvName = "DOTENV_PRIVATE_KEY";
-            if (profileName != null && !profileName.isEmpty()) {
-                privateKeyEnvName = "DOTENV_PRIVATE_KEY_" + profileName.toUpperCase();
-            }
-            String privateKey = System.getenv(privateKeyEnvName);
-            // load from .env.keys file
-            if (privateKey == null || privateKey.isEmpty()) {
-                if (this.directoryPath != null && Files.exists(Paths.get(this.directoryPath, ".env.keys"))) { // Check in the specified directory
-                    final Dotenv keysEnv = Dotenv.configure().directory(this.directoryPath).filename(".env.keys").load();
-                    privateKey = keysEnv.get(privateKeyEnvName);
-                } else if (Files.exists(Paths.get(".env.keys"))) { // Check in the current directory
-                    final Dotenv keysEnv = Dotenv.configure().filename(".env.keys").load();
-                    privateKey = keysEnv.get(privateKeyEnvName);
-                } else if (Files.exists(Paths.get(System.getProperty("user.home"), ".env.keys"))) { // Check in the user's home directory
-                    final Dotenv keysEnv = Dotenv.configure().directory(System.getProperty("user.home")).filename(".env.keys").load();
-                    privateKey = keysEnv.get(privateKeyEnvName);
-                }
-            }
-            this.privateKeyHex = privateKey;
+            this.privateKeyHex = getPrivateKeyFromEnvOrPath(this.directoryPath, profileName);
         }
         return this.privateKeyHex;
     }
@@ -179,6 +164,30 @@ public class DotenvxBuilder extends DotenvBuilder implements DotenvxBaseBuilder 
         } catch (Exception e) {
             throw new DotenvException("Failed to decrypt item: " + item);
         }
+    }
+
+
+    @Nullable
+    public static String getPrivateKeyFromEnvOrPath(@Nullable String workingDirectory, @Nullable String profileName) {
+        String privateKeyEnvName = "DOTENV_PRIVATE_KEY";
+        if (profileName != null && !profileName.isEmpty()) {
+            privateKeyEnvName = "DOTENV_PRIVATE_KEY_" + profileName.toUpperCase();
+        }
+        String privateKey = System.getenv(privateKeyEnvName);
+        // load from .env.keys file
+        if (privateKey == null || privateKey.isEmpty()) {
+            if (workingDirectory != null && Files.exists(Paths.get(workingDirectory, ".env.keys"))) { // Check in the specified directory
+                final Dotenv keysEnv = Dotenv.configure().directory(workingDirectory).filename(".env.keys").load();
+                privateKey = keysEnv.get(privateKeyEnvName);
+            } else if (Files.exists(Paths.get(".env.keys"))) { // Check in the current directory
+                final Dotenv keysEnv = Dotenv.configure().filename(".env.keys").load();
+                privateKey = keysEnv.get(privateKeyEnvName);
+            } else if (Files.exists(Paths.get(System.getProperty("user.home"), ".env.keys"))) { // Check in the user's home directory
+                final Dotenv keysEnv = Dotenv.configure().directory(System.getProperty("user.home")).filename(".env.keys").load();
+                privateKey = keysEnv.get(privateKeyEnvName);
+            }
+        }
+        return privateKey;
     }
 
 }
