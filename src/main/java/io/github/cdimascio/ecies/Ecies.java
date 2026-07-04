@@ -42,7 +42,7 @@ public class Ecies {
     private static final BouncyCastleProvider BOUNCY_CASTLE_PROVIDER = new BouncyCastleProvider();
 
     /**
-     * Generates new key pair consists of {@link ECPublicKey} and {@link ECPrivateKey}
+     * Generates a new key pair consists of {@link ECPublicKey} and {@link ECPrivateKey}
      *
      * @return new EC key pair
      */
