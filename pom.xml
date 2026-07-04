@@ -21,7 +21,7 @@
         <dotenv-java.version>3.2.0</dotenv-java.version>
         <jakarta.config-api.version>0.0.1</jakarta.config-api.version>
         <jackson.version>2.15.4</jackson.version>
-        <junt5.version>5.13.4</junt5.version>
+        <junt5.version>6.1.1</junt5.version>
     </properties>
 
     <developers>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.27.4</version>
+            <version>3.27.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -127,7 +127,7 @@
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.8.0</version>
+                        <version>0.9.0</version>
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
