@@ -112,6 +112,7 @@ You can integrate Jackson with Dotenvx to protect some sensitive fields, such as
   ObjectMapper getDotenvxObjectMapper() {
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addSerializer(new DotenvxGlobalJsonSerializer(publicKey));
+    //simpleModule.addSerializer(new DotenvxGlobalJsonDeserializer(privateKey));
     return JsonMapper.builder().addModules(simpleModule).build();
 }
 
@@ -126,6 +127,8 @@ public void testJsonSerialize() throws IOException {
 ```
 
 If a text value prefixed with `private:`, and the value will be encrypted.
+
+If you want to decrypt the `encrypted:xxxx` value in JSON, please enable `DotenvxGlobalJsonDeserializer(privateKey)`. 
 
 ### private/public key parser and signature with secp256k1
 
