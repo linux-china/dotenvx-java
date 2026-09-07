@@ -57,6 +57,7 @@ You can integrate Jackson with Dotenvx to protect some sensitive fields, such as
   ObjectMapper getDotenvxObjectMapper() {
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addSerializer(new DotenvxGlobalJsonSerializer(publicKey));
+    //simpleModule.addSerializer(new DotenvxGlobalJsonDeserializer(privateKey));
     return JsonMapper.builder().addModules(simpleModule).build();
 }
 
