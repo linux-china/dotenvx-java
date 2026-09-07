@@ -104,6 +104,13 @@ dotenvx-java loads private key from the following sources in order:
 - `.env.keys` file in working directory
 - `$HOME/.env.keys` file
 
+The public/private keys of dotenvx-java for testing:
+
+- public key: `02b4972559803fa3c2464e93858f80c3a4c86f046f725329f8975e007b393dc4f0`
+- private key: `9e70188d351c25d0714929205df9b8f4564b6b859966bdae7aef7f752a749d8b`
+
+And you can use `dotenvx kp --import` to import private key for testing.
+
 ### How to integrate Jackson with Dotenvx?
 
 You can integrate Jackson with Dotenvx to protect some sensitive fields, such as SSN, email or phone number.
