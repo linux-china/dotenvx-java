@@ -7,8 +7,8 @@ public class Secp256k1KeyParserTest {
 
     @Test
     public void parseKeys() throws Exception {
-        String privateKey = "419f823553ee434c8a80a809c9874306593734173a01330e00f0c118da2b0f48";
-        String publicKey = "03437763be709bbb8b253435c210d4f2d01f966195d9faaad7845edf0fde74040f";
+        String privateKey = "9e70188d351c25d0714929205df9b8f4564b6b859966bdae7aef7f752a749d8b";
+        String publicKey = "02b4972559803fa3c2464e93858f80c3a4c86f046f725329f8975e007b393dc4f0";
         Secp256k1KeyParser.parseSecp256k1PrivateKey(Hex.decode(privateKey));
         Secp256k1KeyParser.parseSecp256k1CompressedPublicKey(Hex.decode(publicKey));
     }
